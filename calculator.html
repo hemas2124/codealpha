@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Basic Calculator</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .calculator {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      width: 260px;
+    }
+
+    #display {
+      width: 100%;
+      height: 50px;
+      font-size: 1.5em;
+      text-align: right;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 10px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #66f016;
+    }
+
+    .btn[data-action="equals"] {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .btn[data-action="equals"]:hover {
+      background-color: #45a049;
+    }
+
+    .btn[data-action="clear"] {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .btn[data-action="clear"]:hover {
+      background-color: #e53935;
+    }
+
+    .btn[data-action="delete"] {
+      background-color: #ff9800;
+      color: rgb(202, 35, 35);
+    }
+
+    .btn[data-action="delete"]:hover {
+      background-color: #fb8c00;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" disabled />
+    <div class="buttons">
+      <button class="btn" data-action="clear">C</button>
+      <button class="btn" data-action="delete">←</button>
+      <button class="btn" data-value="/">÷</button>
+      <button class="btn" data-value="*">×</button>
+
+      <button class="btn" data-value="7">7</button>
+      <button class="btn" data-value="8">8</button>
+      <button class="btn" data-value="9">9</button>
+      <button class="btn" data-value="-">−</button>
+
+      <button class="btn" data-value="4">4</button>
+      <button class="btn" data-value="5">5</button>
+      <button class="btn" data-value="6">6</button>
+      <button class="btn" data-value="+">+</button>
+
+      <button class="btn" data-value="1">1</button>
+      <button class="btn" data-value="2">2</button>
+      <button class="btn" data-value="3">3</button>
+      <button class="btn" data-action="equals">=</button>
+
+      <button class="btn" data-value="0">0</button>
+      <button class="btn" data-value=".">.</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.btn');
+
+    let currentInput = '';
+    let resultDisplayed = false;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.value;
+        const action = button.dataset.action;
+
+        if (value) {
+          if (resultDisplayed) {
+            currentInput = '';
+            resultDisplayed = false;
+          }
+          currentInput += value;
+          display.value = currentInput;
+        } else if (action) {
+          handleAction(action);
+        }
+      });
+    });
+
+    function handleAction(action) {
+      switch(action) {
+        case 'clear':
+          currentInput = '';
+          display.value = '';
+          break;
+        case 'delete':
+          currentInput = currentInput.slice(0, -1);
+          display.value = currentInput;
+          break;
+        case 'equals':
+          try {
+            currentInput = eval(currentInput).toString();
+            display.value = currentInput;
+            resultDisplayed = true;
+          } catch (e) {
+            display.value = 'Error';
+            currentInput = '';
+          }
+          break;
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if ((e.key >= '0' && e.key <= '9') || ['+', '-', '*', '/', '.'].includes(e.key)) {
+        if (resultDisplayed) {
+          currentInput = '';
+          resultDisplayed = false;
+        }
+        currentInput += e.key;
+        display.value = currentInput;
+      } else if (e.key === 'Enter') {
+        try {
+          currentInput = eval(currentInput).toString();
+          display.value = currentInput;
+          resultDisplayed = true;
+        } catch (e) {
+          display.value = 'Error';
+          currentInput = '';
+        }
+      } else if (e.key === 'Backspace') {
+        currentInput = currentInput.slice(0, -1);
+        display.value = currentInput;
+      } else if (e.key.toLowerCase() === 'c') {
+        currentInput = '';
+        display.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
